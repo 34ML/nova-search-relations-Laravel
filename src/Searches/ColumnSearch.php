@@ -3,7 +3,7 @@
 namespace _34ml\SearchRelations\Searches;
 
 use Illuminate\Database\Eloquent\Builder;
-use Titasgailius\SearchRelations\Contracts\Search;
+use _34ml\SearchRelations\Contracts\Search;
 use Illuminate\Support\Facades\DB;
 
 class ColumnSearch implements Search

@@ -5,8 +5,8 @@ namespace _34ml\SearchRelations;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Illuminate\Database\Eloquent\Builder;
-use Titasgailius\SearchRelations\Contracts\Search;
-use Titasgailius\SearchRelations\Searches\RelationSearch;
+use _34ml\SearchRelations\Contracts\Search;
+use _34ml\SearchRelations\Searches\RelationSearch;
 
 trait SearchesRelations
 {
