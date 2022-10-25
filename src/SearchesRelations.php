@@ -2,6 +2,7 @@
 
 namespace Titasgailius\SearchRelations;
 
+use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Illuminate\Database\Eloquent\Builder;
 use Titasgailius\SearchRelations\Contracts\Search;
@@ -79,10 +80,39 @@ trait SearchesRelations
      */
     protected static function applySearch($query, $search)
     {
-        return $query->where(function ($query) use ($search) {
-            parent::applySearch($query, $search);
-            static::applyRelationSearch($query, $search);
-        });
+        return $query
+            ->where(function ($query) use ($search) {
+                $model = $query
+                    ->getModel();
+
+                $connectionType = $model
+                    ->getConnection()
+                    ->getDriverName();
+
+                $canSearchPrimaryKey = ctype_digit($search) &&
+                    in_array($model->getKeyType(), ['int', 'integer']) &&
+                    ($connectionType != 'sqlite' || $search <= static::maxPrimaryKeySize()) &&
+                    in_array($model->getKeyName(), static::$search);
+
+                if ($canSearchPrimaryKey) {
+                    $query->orWhere($model->getQualifiedKeyName(), $search);
+                }
+
+                $likeOperator = $connectionType == 'sqlite' ? 'ilike' : 'like';
+
+                foreach (static::searchableColumns() as $column) {
+                    $query->orWhere(
+                        \DB::raw('LOWER(' . $model
+                                ->getConnection()
+                                ->getQueryGrammar()
+                                ->wrap($model
+                                    ->qualifyColumn($column)) . ')'),
+                        $likeOperator,
+                        static::searchableKeyword($column, strtolower($search))
+                    );
+                }
+                static::applyRelationSearch($query, $search);
+            });
     }
 
     /**

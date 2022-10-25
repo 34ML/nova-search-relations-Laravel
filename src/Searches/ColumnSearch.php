@@ -4,6 +4,7 @@ namespace Titasgailius\SearchRelations\Searches;
 
 use Illuminate\Database\Eloquent\Builder;
 use Titasgailius\SearchRelations\Contracts\Search;
+use Illuminate\Support\Facades\DB;
 
 class ColumnSearch implements Search
 {
@@ -52,10 +53,18 @@ class ColumnSearch implements Search
         $operator = $this->operator($query);
 
         foreach ($this->columns as $column) {
-            $query->orWhere($model->qualifyColumn($column), $operator, '%'.$search.'%');
+            $query->orWhere(
+                \DB::raw('LOWER(' . $model->getConnection()->getQueryGrammar()->wrap($model->qualifyColumn($column)) . ')'),
+                $operator,
+                static::searchableKeyword($column, strtolower($search)));
         }
 
         return $query;
+    }
+
+    protected static function searchableKeyword($column, $search)
+    {
+        return '%'.$search.'%';
     }
 
     /**
@@ -66,7 +75,7 @@ class ColumnSearch implements Search
      */
     protected function operator(Builder $query): string
     {
-        if ($query->getModel()->getConnection()->getDriverName() === 'pgsql') {
+        if ($query->getModel()->getConnection()->getDriverName() === 'sqlite') {
             return 'ILIKE';
         }
 
