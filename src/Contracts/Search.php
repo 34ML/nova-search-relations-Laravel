@@ -1,6 +1,6 @@
 <?php
 
-namespace Titasgailius\SearchRelations\Contracts;
+namespace _34ml\SearchRelations\Contracts;
 
 use Illuminate\Database\Eloquent\Builder;
 

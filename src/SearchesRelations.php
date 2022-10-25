@@ -1,6 +1,6 @@
 <?php
 
-namespace Titasgailius\SearchRelations;
+namespace _34ml\SearchRelations;
 
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;

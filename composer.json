@@ -13,7 +13,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Titasgailius\\SearchRelations\\": "src/"
+            "_34ml\\SearchRelations\\": "src/"
         }
     },
     "config": {
